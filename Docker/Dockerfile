@@ -1,7 +1,7 @@
 FROM ros:iron-ros-base-jammy
 
 RUN apt update && apt install nano -y
-RUN echo 'source ros_entrypoint.sh' >> ~/.bashrc
+RUN echo 'source /ros_entrypoint.sh' >> ~/.bashrc
 
 RUN apt install ros-iron-slam-toolbox -y
 RUN apt install ros-iron-navigation2 -y
