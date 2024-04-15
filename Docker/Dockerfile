@@ -18,3 +18,5 @@ RUN apt install -y sublime-text
 RUN apt install ros-iron-desktop-full -y
 
 RUN echo 'export TURTLEBOT3_MODEL=waffle' >> ~/.bashrc
+WORKDIR /root/catkin_ws
+CMD ["bash"]
