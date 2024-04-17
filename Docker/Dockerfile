@@ -27,4 +27,6 @@ RUN echo 'alias code-open="code --no-sandbox --user-data-dir /tmp"' >> ~/.bashrc
 RUN mkdir -p /root/ros2_ws/src
 WORKDIR /root/ros2_ws
 
+COPY ./pod_sensing /root/ros2_ws/src/pod_sensing
+
 CMD ["bash"]
