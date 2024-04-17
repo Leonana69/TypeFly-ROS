@@ -1,14 +1,13 @@
 FROM ros:humble-ros-base-jammy
 
 RUN apt update && apt install ros-humble-desktop-full -y
-RUN echo 'source /ros_entrypoint.sh' >> ~/.bashrc
 
 RUN apt install ros-humble-slam-toolbox -y
 RUN apt install ros-humble-navigation2 -y
 RUN apt install ros-humble-nav2-bringup -y
 RUN apt install ros-humble-turtlebot3* -y
 
-RUN apt update && apt install nano wget xdg-utils -y
+RUN apt update && apt install nano wget xdg-utils make -y
 
 # Install VSCode
 RUN wget -O code.deb https://vscode.download.prss.microsoft.com/dbazure/download/stable/e170252f762678dec6ca2cc69aba1570769a5d39/code_1.88.1-1712771838_amd64.deb
@@ -21,12 +20,15 @@ RUN dpkg -i code.deb && rm code.deb
 # RUN apt update
 # RUN apt install -y sublime-text
 
+RUN echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
+
 RUN echo 'export TURTLEBOT3_MODEL=waffle' >> ~/.bashrc
 RUN echo 'alias code-open="code --no-sandbox --user-data-dir /tmp"' >> ~/.bashrc
 
 RUN mkdir -p /root/ros2_ws/src
-WORKDIR /root/ros2_ws
 
 COPY ./pod_sensing /root/ros2_ws/src/pod_sensing
+COPY ./Makefile /root/ros2_ws/Makefile
 
-CMD ["bash"]
+WORKDIR /root/ros2_ws
+CMD ["bash", "-it"]
