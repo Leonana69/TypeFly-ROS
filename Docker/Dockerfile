@@ -20,6 +20,14 @@ RUN dpkg -i code.deb && rm code.deb
 # RUN apt update
 # RUN apt install -y sublime-text
 
+RUN apt update && apt install -y python3-pip
+RUN apt install -y ros-humble-tf-transformations ros-humble-tf2-tools 
+RUN pip3 install transforms3d pygame
+
+
+ADD https://api.github.com/repos/Leonana69/POD-XIAO-Python/git/refs/heads/main version.json
+RUN cd ~ && git clone https://github.com/Leonana69/POD-XIAO-Python.git && cd POD-XIAO-Python && pip3 install -e .
+
 RUN echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
 
 RUN echo 'export TURTLEBOT3_MODEL=waffle' >> ~/.bashrc
@@ -27,8 +35,10 @@ RUN echo 'alias code-open="code --no-sandbox --user-data-dir /tmp"' >> ~/.bashrc
 
 RUN mkdir -p /root/ros2_ws/src
 
-COPY ./pod_sensing /root/ros2_ws/src/pod_sensing
+COPY ./typefly /root/ros2_ws/src/typefly
 COPY ./Makefile /root/ros2_ws/Makefile
+COPY ./slam_config.yaml /root/ros2_ws/slam_config.yaml
 
 WORKDIR /root/ros2_ws
-CMD ["bash", "-it"]
+RUN make
+CMD ["bash"]

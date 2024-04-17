@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'pod_sensing'
+package_name = 'typefly'
 
 setup(
     name=package_name,
@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'sensor_adapter = pod_sensing.sensor_adapter:main'
+            'robot = typefly.pod_main:main',
+            'controller = typefly.pod_controller:main'
         ],
     },
 )

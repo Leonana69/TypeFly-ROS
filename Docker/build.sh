@@ -19,3 +19,5 @@ docker run -td --privileged --net=host --ipc=host \
     -e "XAUTHORITY=$XAUTH" \
     --cap-add=SYS_PTRACE \
     typefly-ros:0.1
+
+docker exec -it typefly-ros bash
