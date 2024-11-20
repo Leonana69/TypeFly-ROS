@@ -10,27 +10,46 @@ class KeyboardControlPublisher(Node):
         self.twist = Twist()
 
         # Set up a timer to publish Twist messages at a regular interval
-        self.timer = self.create_timer(0.1, self.publish_twist)
+        self.timer = self.create_timer(0.01, self.publish_twist)
         self.get_logger().info('Keyboard control node started. Press "w" for forward and "s" for backward.')
 
+        self.command_interval = 0.2
+        self.last_command_time = self.get_clock().now()
+
     def publish_twist(self):
-        # Reset linear.x to 0.0 by default
-        self.twist.linear.x = 0.0
-
         # Poll keyboard events
+        move_speed = 0.5
+        turn_speed = 1.0
+        is_key_release = False
         events = get_key()
-        print('events:', events)
         for event in events:
-            if event.ev_type == 'Key' and event.state == 1:  # Key pressed
+            if event.ev_type == 'Key' and (event.state == 1 or event.state == 2):  # Key pressed
                 if event.code == 'KEY_W':
-                    self.twist.linear.x = 0.2  # Forward
+                    self.twist.linear.x = move_speed  # Forward
                 elif event.code == 'KEY_S':
-                    self.twist.linear.x = -0.2  # Backward
+                    self.twist.linear.x = -move_speed  # Backward
+                elif event.code == 'KEY_A':
+                    self.twist.linear.y = move_speed
+                elif event.code == 'KEY_D':
+                    self.twist.linear.y = -move_speed
+                elif event.code == 'KEY_E':
+                    self.twist.angular.z = -turn_speed
+                elif event.code == 'KEY_Q':
+                    self.twist.angular.z = turn_speed
+            elif event.ev_type == 'Key' and event.state == 0:  # Key released
+                is_key_release = True
+                if event.code == 'KEY_W' or event.code == 'KEY_S':
+                    self.twist.linear.x = 0.0
+                elif event.code == 'KEY_A' or event.code == 'KEY_D':
+                    self.twist.linear.y = 0.0
+                elif event.code == 'KEY_E' or event.code == 'KEY_Q':
+                    self.twist.angular.z = 0.0
 
-        print(f'linear.x = {self.twist.linear.x}')
         # Publish the Twist message
-        self.publisher_.publish(self.twist)
-        self.get_logger().info(f'Publishing: linear.x = {self.twist.linear.x}')
+        if is_key_release or (self.get_clock().now() - self.last_command_time).nanoseconds > self.command_interval * 1e9:
+            self.publisher_.publish(self.twist)
+            self.last_command_time = self.get_clock().now()
+            self.get_logger().info(f'Publishing: {self.twist.linear.x} m/s, {self.twist.linear.y} m/s')
 
 def main():
     rclpy.init()
